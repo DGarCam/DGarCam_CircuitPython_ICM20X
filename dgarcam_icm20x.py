@@ -664,7 +664,10 @@ class ICM20648(ICM20X):  # pylint:disable=too-many-instance-attributes
         )
 
         super().__init__(i2c_bus, address)
-        #self._magnetometer_init()
+        
+        # Change of default FSR values:
+        self.accelerometer_range = AccelRange.RANGE_2G
+        self.gyro_range = GyroRange.RANGE_250_DPS
 
 
 class ICM20948(ICM20X):  # pylint:disable=too-many-instance-attributes
