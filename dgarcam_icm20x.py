@@ -3,12 +3,12 @@
 # SPDX-License-Identifier: MIT
 
 """
-`adafruit_icm20x`
+`dgarcam_icm20x`
 ================================================================================
 
 Library for the ST ICM20X Motion Sensor Family
 
-* Author(s): Bryan Siepert
+* Author(s): Bryan Siepert, Daniel García Campelo
 
 Implementation Notes
 --------------------
@@ -29,7 +29,7 @@ Implementation Notes
 """
 
 __version__ = "0.0.0-auto.0"
-__repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_ICM20X.git"
+__repo__ = "https://github.com/DGarCam/DGarCam_CircuitPython_ICM20X.git"
 # Common imports; remove if unused or pylint will complain
 from time import sleep
 import adafruit_bus_device.i2c_device as i2c_device
@@ -38,8 +38,10 @@ from adafruit_register.i2c_struct import UnaryStruct, ROUnaryStruct, Struct
 from adafruit_register.i2c_bit import RWBit, ROBit
 from adafruit_register.i2c_bits import RWBits
 
+_ICM20648_DEFAULT_ADDRESS = 0x68  # icm20648 default i2c address
 _ICM20649_DEFAULT_ADDRESS = 0x68  # icm20649 default i2c address
 _ICM20948_DEFAULT_ADDRESS = 0x69  # icm20649 default i2c address
+_ICM20648_DEVICE_ID = 0xE0  # Correct content of WHO_AM_I register
 _ICM20649_DEVICE_ID = 0xE1  # Correct content of WHO_AM_I register
 _ICM20948_DEVICE_ID = 0xEA  # Correct content of WHO_AM_I register
 
@@ -221,7 +223,7 @@ class ICM20X:  # pylint:disable=too-many-instance-attributes
 
         self.i2c_device = i2c_device.I2CDevice(i2c_bus, address)
         self._bank = 0
-        if not self._device_id in [_ICM20649_DEVICE_ID, _ICM20948_DEVICE_ID]:
+        if not self._device_id in [_ICM20648_DEVICE_ID, _ICM20649_DEVICE_ID, _ICM20948_DEVICE_ID]:
             raise RuntimeError("Failed to find an ICM20X sensor - check your wiring!")
         self.reset()
         self.initialize()
@@ -586,6 +588,83 @@ class MagDataRate(CV):
     """Options for :attr:`ICM20948.magnetometer_data_rate`"""
 
     pass  # pylint: disable=unnecessary-pass
+
+
+class ICM20648(ICM20X):  # pylint:disable=too-many-instance-attributes
+    """Library for the TDK ICM-20648 Wide-Range 6-DoF Accelerometer and Gyro.
+
+    :param ~busio.I2C i2c_bus: The I2C bus the ICM20648 is connected to.
+    :param int address: The I2C address of the device. Defaults to :const:`0x68`
+
+    **Quickstart: Importing and using the ICM20648 temperature sensor**
+
+        Here is an example of using the :class:`ICM20648` class.
+        First you will need to import the libraries to use the sensor
+
+        .. code-block:: python
+
+            import board
+            import adafruit_icm20x
+
+        Once this is done you can define your `board.I2C` object and define your sensor object
+
+        .. code-block:: python
+
+            i2c = board.I2C()   # uses board.SCL and board.SDA
+            icm = dgarcam_icm20x.ICM20648(i2c)
+
+        Now you have access to the acceleration using :attr:`acceleration` attribute and
+        the gyro information using the :attr:`gyro` attribute
+
+        .. code-block:: python
+
+                acceleration = icm.acceleration
+                gyro = icm.gyro
+
+
+    """
+
+    _slave_finished = ROBit(_ICM20X_I2C_MST_STATUS, 6)
+
+    # mag data is LE
+    #_raw_mag_data = Struct(_ICM20948_EXT_SLV_SENS_DATA_00, "<hhhh")
+
+    _bypass_i2c_master = RWBit(_ICM20X_REG_INT_PIN_CFG, 1)
+    _i2c_master_control = UnaryStruct(_ICM20X_I2C_MST_CTRL, ">B")
+    _i2c_master_enable = RWBit(_ICM20X_USER_CTRL, 5)  # TODO: use this in sw reset
+    _i2c_master_reset = RWBit(_ICM20X_USER_CTRL, 1)
+
+    _slave0_addr = UnaryStruct(_ICM20X_I2C_SLV0_ADDR, ">B")
+    _slave0_reg = UnaryStruct(_ICM20X_I2C_SLV0_REG, ">B")
+    _slave0_ctrl = UnaryStruct(_ICM20X_I2C_SLV0_CTRL, ">B")
+    _slave0_do = UnaryStruct(_ICM20X_I2C_SLV0_DO, ">B")
+
+    _slave4_addr = UnaryStruct(_ICM20X_I2C_SLV4_ADDR, ">B")
+    _slave4_reg = UnaryStruct(_ICM20X_I2C_SLV4_REG, ">B")
+    _slave4_ctrl = UnaryStruct(_ICM20X_I2C_SLV4_CTRL, ">B")
+    _slave4_do = UnaryStruct(_ICM20X_I2C_SLV4_DO, ">B")
+    _slave4_di = UnaryStruct(_ICM20X_I2C_SLV4_DI, ">B")
+
+    def __init__(self, i2c_bus, address=_ICM20648_DEFAULT_ADDRESS):
+        AccelRange.add_values(
+            (
+                ("RANGE_2G", 0, 2, 16384),
+                ("RANGE_4G", 1, 4, 8192),
+                ("RANGE_8G", 2, 8, 4096.0),
+                ("RANGE_16G", 3, 16, 2048),
+            )
+        )
+        GyroRange.add_values(
+            (
+                ("RANGE_250_DPS", 0, 250, 131.0),
+                ("RANGE_500_DPS", 1, 500, 65.5),
+                ("RANGE_1000_DPS", 2, 1000, 32.8),
+                ("RANGE_2000_DPS", 3, 2000, 16.4),
+            )
+        )
+
+        super().__init__(i2c_bus, address)
+        #self._magnetometer_init()
 
 
 class ICM20948(ICM20X):  # pylint:disable=too-many-instance-attributes
