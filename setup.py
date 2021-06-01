@@ -22,14 +22,14 @@ with open(path.join(here, "README.rst"), encoding="utf-8") as f:
     long_description = f.read()
 
 setup(
-    name="adafruit-circuitpython-icm20x",
+    name="dgarcam-circuitpython-icm20x",
     use_scm_version=True,
     setup_requires=["setuptools_scm"],
     description="Library for the ST ICM-20X Wide-Range 6-DoF Accelerometer and Gyro Family",
     long_description=long_description,
     long_description_content_type="text/x-rst",
     # The project's main homepage.
-    url="https://github.com/adafruit/Adafruit_CircuitPython_ICM20X",
+    url="https://github.com/DGarCam/DGarCam_CircuitPython_ICM20X",
     # Author details
     author="Adafruit Industries",
     author_email="circuitpython@adafruit.com",
@@ -52,11 +52,11 @@ setup(
         "Programming Language :: Python :: 3.5",
     ],
     # What does your project relate to?
-    keywords="adafruit blinka circuitpython micropython icm20649 icm20948 icm20x gyro accelerometer high-G "
+    keywords="adafruit blinka circuitpython micropython icm20648 icm20649 icm20948 icm20x gyro accelerometer high-G "
     "6-axis wide range",
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
     # TODO: IF LIBRARY FILES ARE A PACKAGE FOLDER,
     #       CHANGE `py_modules=['...']` TO `packages=['...']`
-    py_modules=["adafruit_icm20x"],
+    py_modules=["dgarcam_icm20x"],
 )
