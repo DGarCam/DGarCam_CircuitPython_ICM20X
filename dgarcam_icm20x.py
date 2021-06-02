@@ -232,7 +232,7 @@ class ICM20X:  # pylint:disable=too-many-instance-attributes
         """Configure the sensors with the default settings. For use after calling :meth:`reset`"""
 
         self._sleep = False
-        self.accelerometer_range = AccelRange.RANGE_8G  # pylint: disable=no-member
+        self.accelerometer_range = AccelRange.RANGE_4G  # pylint: disable=no-member
         self.gyro_range = GyroRange.RANGE_500_DPS  # pylint: disable=no-member
 
         self.accelerometer_data_rate_divisor = 20  # ~53.57Hz
@@ -666,8 +666,8 @@ class ICM20648(ICM20X):  # pylint:disable=too-many-instance-attributes
         super().__init__(i2c_bus, address)
         
         # Change of default FSR values:
-        self.accelerometer_range = AccelRange.RANGE_2G
-        self.gyro_range = GyroRange.RANGE_250_DPS
+        #self.accelerometer_range = AccelRange.RANGE_2G
+        #self.gyro_range = GyroRange.RANGE_250_DPS
 
 
 class ICM20948(ICM20X):  # pylint:disable=too-many-instance-attributes
