@@ -232,7 +232,7 @@ class ICM20X:  # pylint:disable=too-many-instance-attributes
         """Configure the sensors with the default settings. For use after calling :meth:`reset`"""
 
         self._sleep = False
-        self.accelerometer_range = AccelRange.RANGE_4G  # pylint: disable=no-member
+        self.accelerometer_range = AccelRange.RANGE_8G  # pylint: disable=no-member
         self.gyro_range = GyroRange.RANGE_500_DPS  # pylint: disable=no-member
 
         self.accelerometer_data_rate_divisor = 20  # ~53.57Hz
@@ -604,7 +604,7 @@ class ICM20648(ICM20X):  # pylint:disable=too-many-instance-attributes
         .. code-block:: python
 
             import board
-            import adafruit_icm20x
+            import dgarcam_icm20x
 
         Once this is done you can define your `board.I2C` object and define your sensor object
 
